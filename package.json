@@ -1,0 +1,12 @@
+{
+  "name": "playground-for-node",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/appwrite/playground-for-deno.git",
+  "author": "Bradley Schofield <ionic@ionicisere.co.uk>",
+  "license": "BSD-3-Clause",
+  "dependencies": {
+    "chalk": "^4.1.0",
+    "node-appwrite": "^1.1.0"
+  }
+}
