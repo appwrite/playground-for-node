@@ -2,7 +2,7 @@
   "name": "playground-for-node",
   "version": "1.0.0",
   "main": "index.js",
-  "repository": "https://github.com/appwrite/playground-for-deno.git",
+  "repository": "https://github.com/appwrite/playground-for-node.git",
   "author": "Bradley Schofield <ionic@ionicisere.co.uk>",
   "license": "BSD-3-Clause",
   "dependencies": {
