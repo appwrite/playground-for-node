@@ -12,16 +12,16 @@ This playground doesn't include any NodeJS best practices but rather intended to
 
 ## System Requirements 
 * A system with NodeJS installed.
-* You have readily available AppWrite running instance (localhost in most cases).
-* Create a project in AppWrite instance using console.
-* Generate a secret key in the AppWrite instance using console.
+* You have a readily available AppWrite running instance (localhost in most cases).
+* Create a project in AppWrite instance using the console.
+* Generate a secret key in the AppWrite instance using the console.
 
 ### Installation
 1. Clone this repository.
-2. cd into to repository.
-3. Open the app.js file found in the root of the cloned repository.
-4. Copy the project_id, endpoint, secret key from your Appwrite Console.
-4. Update project_id, endpoint, secret key by copied from the console in app.js file where stated. 
+2. `cd` into to therepository.
+3. Open the **`app.js`** file found in the root of the cloned repository.
+4. Copy the `project_id`, `endpoint`, `secret key` from your Appwrite Console.
+4. Update project_id, endpoint, secret key by copying from the console in **`app.js`** file where stated. 
 5. Install dependencies using either NPM (`npm install`) or Yarn (`yarn install`)
 5. Execute the command `node app.js`
 6. You will see the JSON response in the console.
