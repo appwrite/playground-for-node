@@ -6,17 +6,17 @@ Appwrite playground is a simple way to explore the Appwrite API & Appwrite Node.
 
 **Work in progress**
 
-## Get Started
+## Get Started --
 
 This playground doesn't include any NodeJS best practices but rather intended to show some of the most simple examples and use cases of using the Appwrite API in your NodeJS application.
 
-## System Requirements 
+## System Requirements --
 * A system with NodeJS installed.
 * You have readily available AppWrite running instance (localhost in most cases).
 * Create a project in AppWrite instance using console.
 * Generate a secret key in the AppWrite instance using console.
 
-### Installation
+### Installation --
 1. Clone this repository.
 2. cd into to repository.
 3. Open the app.js file found in the root of the cloned repository.
@@ -26,7 +26,7 @@ This playground doesn't include any NodeJS best practices but rather intended to
 5. Execute the command `node app.js`
 6. You will see the JSON response in the console.
 
-### API Covered in Playground.
+### API Covered in Playground. --
 * Create Collection
 * List Collection
 * Add Document
@@ -35,16 +35,16 @@ This playground doesn't include any NodeJS best practices but rather intended to
 * Create User
 * List User
 
-## Contributing
+## Contributing --
 
 All code contributions - including those of people having commit access - must go through a pull request and approved by a core developer before being merged. This is to ensure proper review of all the code.
 
 We truly ❤️ pull requests! If you wish to help, you can learn more about how you can contribute to this project in the [contribution guide](https://github.com/appwrite/appwrite/blob/master/CONTRIBUTING.md).
 
-## Security
+## Security --
 
 For security issues, kindly email us [security@appwrite.io](mailto:security@appwrite.io) instead of posting a public issue in GitHub.
 
-## Follow Us
+## Follow Us --
 
 Join our growing community around the world! Follow us on [Twitter](https://twitter.com/appwrite_io), [Facebook Page](https://www.facebook.com/appwrite.io), [Facebook Group](https://www.facebook.com/groups/appwrite.developers/) or join our Discord Server [Discord community](https://discord.gg/GSeTUeA) for more help, ideas and discussions.  
