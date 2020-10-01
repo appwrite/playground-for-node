@@ -24,7 +24,7 @@ This playground doesn't include any NodeJS best practices but rather intended to
 4. Update project_id, endpoint, secret key by copied from the console in app.js file where stated. 
 5. Install dependencies using either NPM (`npm install`) or Yarn (`yarn install`)
 5. Execute the command `node app.js`
-6. You will see the JSON response in the console.
+6. You will see the JSON response in the console.and this is very helpfull.
 
 ### API Covered in Playground.
 * Create Collection
