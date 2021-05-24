@@ -9,6 +9,7 @@ const client = new sdk.Client()
 client.setEndpoint('http://localhost/v1') // Replace with your endpoint
 client.setKey('YOUR API KEY') // Replace with your API Key
 client.setProject('YOUR PROJECT ID') // Replace with your project ID
+// client.setJWT('jwt') // Use this to authenticate with JWT generated from Client SDK
 let collectionId
 let userId
 
@@ -20,6 +21,7 @@ let userId
 //  api.uploadFile()
 //  api.createUser(new Date().getTime() + '@example.com', 'user@123','Some User')
 //  api.listUser()
+//  api.getAccount() // Works only with JWT
 
 // List of API Definitions
 
@@ -45,6 +47,13 @@ const listCollection = async () => {
   const response = await database.listCollections()
   const collection = response.collections[0]
   console.log(collection)
+}
+
+const getAccount = async () => {
+  const account = new sdk.Account(client)
+  console.log(chalk.greenBright('Running Get Account API'))
+  const response = await account.get()
+  console.log(response);
 }
 
 const addDoc = async () => {
@@ -97,6 +106,7 @@ const runAllTasks = async () => {
   await uploadFile()
   await createUser(new Date().getTime() + '@example.com', 'user@123', 'Some User')
   await listUser()
+  // await getAccount() // works only with JWT
 }
 
 runAllTasks()
