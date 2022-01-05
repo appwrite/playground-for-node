@@ -40,14 +40,14 @@ const createCollection = async () => {
   )
   collectionId = response.$id
   console.log(response)
-  response = database.createStringAttribute(
+  response = await database.createStringAttribute(
     collectionId,
     'name',
     255,
     true,
   )
   print(response)
-  response = database.createIntegerAttribute(
+  response = await database.createIntegerAttribute(
     collectionId,
     'release_year',
     0,
