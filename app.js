@@ -46,7 +46,7 @@ const createCollection = async () => {
     255,
     true,
   )
-  print(response)
+  console.log(response)
   response = await database.createIntegerAttribute(
     collectionId,
     'release_year',
@@ -54,7 +54,7 @@ const createCollection = async () => {
     9999,
     true
   )
-  print(response)
+  console.log(response)
 }
 
 const listCollection = async () => {
