@@ -28,10 +28,11 @@ let userId
 const createCollection = async () => {
   const database = new sdk.Database(client)
   console.log(chalk.greenBright('Running Create Collection API'))
-  const response = await database.createCollection(
+  let response = await database.createCollection(
+    'movies', // collection id, can set to `unique()` to let server auto generate
     'Movies', // Collection Name
-    ['*'], // Read permissions
-    ['*'], // Write permissions
+    ['role:all'], // Read permissions
+    ['role:all'], // Write permissions
     [
       { label: 'Name', key: 'name', type: 'text', default: 'Empty Name', required: true, array: false },
       { label: 'release_year', key: 'release_year', type: 'numeric', default: 1970, required: true, array: false }
@@ -39,6 +40,21 @@ const createCollection = async () => {
   )
   collectionId = response.$id
   console.log(response)
+  response = database.createStringAttribute(
+    collectionId,
+    'name',
+    255,
+    true,
+  )
+  print(response)
+  response = database.createIntegerAttribute(
+    collectionId,
+    'release_year',
+    0,
+    9999,
+    true
+  )
+  print(response)
 }
 
 const listCollection = async () => {
@@ -60,11 +76,12 @@ const addDoc = async () => {
   const database = new sdk.Database(client)
   console.log(chalk.greenBright('Running Add Document API'))
   const response = await database.createDocument(collectionId,
+    'unique()',
     {
       name: 'Spider Man',
       release_year: 1920
     },
-    ['*'], ['*']
+    ['role:all'], ['role:all']
   )
   console.log(response)
 }
@@ -79,14 +96,14 @@ const listDoc = async () => {
 const uploadFile = async () => {
   const storage = new sdk.Storage(client)
   console.log(chalk.greenBright('Running Upload File API'))
-  const response = await storage.createFile(fs.createReadStream(path.join(__dirname, '/nature.jpg')), [], [])
+  const response = await storage.createFile('unique()', fs.createReadStream(path.join(__dirname, '/nature.jpg')), [], [])
   console.log(response)
 }
 
 const createUser = async (email, password, name) => {
   const users = new sdk.Users(client)
   console.log(chalk.greenBright('Running Create User API'))
-  const response = await users.create(email, password, name)
+  const response = await users.create('unique()', email, password, name)
   userId = response.$id
   console.log(response)
 }
