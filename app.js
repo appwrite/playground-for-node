@@ -11,7 +11,8 @@ client.setKey('YOUR API KEY') // Replace with your API Key
 client.setProject('YOUR PROJECT ID') // Replace with your project ID
 // client.setJWT('jwt') // Use this to authenticate with JWT generated from Client SDK
 let collectionId
-let userId
+let bucketId
+let documentId
 
 // API Calls
 //  api.createCollection()
@@ -31,12 +32,9 @@ const createCollection = async () => {
   let response = await database.createCollection(
     'movies', // collection id, can set to `unique()` to let server auto generate
     'Movies', // Collection Name
+    'document',
     ['role:all'], // Read permissions
     ['role:all'], // Write permissions
-    [
-      { label: 'Name', key: 'name', type: 'text', default: 'Empty Name', required: true, array: false },
-      { label: 'release_year', key: 'release_year', type: 'numeric', default: 1970, required: true, array: false }
-    ]
   )
   collectionId = response.$id
   console.log(response)
@@ -50,9 +48,9 @@ const createCollection = async () => {
   response = await database.createIntegerAttribute(
     collectionId,
     'release_year',
+    true,
     0,
     9999,
-    true
   )
   console.log(response)
 }
@@ -83,6 +81,7 @@ const addDoc = async () => {
     },
     ['role:all'], ['role:all']
   )
+  documentId = response.$id
   console.log(response)
 }
 
@@ -93,12 +92,43 @@ const listDoc = async () => {
   console.log(response)
 }
 
+const deleteDoc = async () => {
+  const database = new sdk.Database(client)
+  console.log(chalk.greenBright('Running Delete Document API'))
+  const response = await database.deleteDocument(collectionId, documentId)
+  console.log(response)
+}
+
+const deleteCollection = async () => {
+  const database = new sdk.Database(client)
+  console.log(chalk.greenBright('Running Delete Collection API'))
+  const response = await database.deleteCollection(collectionId)
+  console.log(response)
+}
+
+
+const createBucket = async () => {
+  const storage = new sdk.Storage(client)
+  console.log(chalk.greenBright('Running Create Bucket API'))
+  const response = await storage.createBucket('unique()', 'awesome bucket', 'file')
+  bucketId = response.$id
+  console.log(response)
+}
+
 const uploadFile = async () => {
   const storage = new sdk.Storage(client)
   console.log(chalk.greenBright('Running Upload File API'))
-  const response = await storage.createFile('unique()', fs.createReadStream(path.join(__dirname, '/nature.jpg')), [], [])
+  const response = await storage.createFile(bucketId, 'unique()', path.join(__dirname, '/nature.jpg'), [], [])
   console.log(response)
 }
+
+const deleteBucket = async () => {
+  const storage = new sdk.Storage(client)
+  console.log(chalk.greenBright('Running Delete Bucket API'))
+  const response = await storage.deleteBucket(bucketId)
+  console.log(response)
+}
+
 
 const createUser = async (email, password, name) => {
   const users = new sdk.Users(client)
@@ -120,7 +150,11 @@ const runAllTasks = async () => {
   await listCollection()
   await addDoc()
   await listDoc()
+  await deleteDoc()
+  await deleteCollection()
+  await createBucket()
   await uploadFile()
+  await deleteBucket()
   await createUser(new Date().getTime() + '@example.com', 'user@123', 'Some User')
   await listUser()
   // await getAccount() // works only with JWT
