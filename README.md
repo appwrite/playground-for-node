@@ -10,30 +10,56 @@ Appwrite playground is a simple way to explore the Appwrite API & Appwrite Node.
 
 This playground doesn't include any NodeJS best practices but rather intended to show some of the most simple examples and use cases of using the Appwrite API in your NodeJS application.
 
-## System Requirements 
-* A system with NodeJS installed.
-* You have readily available AppWrite running instance (localhost in most cases).
-* Create a project in AppWrite instance using console.
-* Generate a secret key in the AppWrite instance using console.
+## Requirements
+* A system with NodeJS or Docker installed.
+* An Appwrite instance.
+* An Appwrite project created in the console.
+* An Appwrite API key created in the console.
 
 ### Installation
+
 1. Clone this repository.
-2. cd into to repository.
-3. Open the app.js file found in the root of the cloned repository.
-4. Copy the project_id, endpoint, secret key from your Appwrite Console.
-4. Update project_id, endpoint, secret key by copied from the console in app.js file where stated. 
-5. Install dependencies using either NPM (`npm install`) or Yarn (`yarn install`)
-5. Execute the command `node app.js`
+2. `cd` into the repository.
+3. Open the `app.js` file found in the root of the cloned repository.
+4. Copy Project ID, endpoint and API key from Appwrite console into `app.js`
+5. Run the playground:
+    NodeJS:
+        - Install dependencies `npm install`
+        - Execute the command `node app.js`
+    Docker:
+        - Execute the command `docker compose up`
 6. You will see the JSON response in the console.
 
-### API Covered in Playground.
-* Create Collection
-* List Collection
-* Add Document
-* List Documents
-* Upload File
-* Create User
-* List User
+### API's Covered
+
+- Databse
+    * Create Collection
+    * List Collections
+    * Delete Collection
+    * Create Document
+    * List Documents
+    * Delete Document
+
+- Storage
+    * Create Bucket
+    * List Buckets
+    * Delete Bucket
+    * Upload File
+    * List Files
+    * Delete File
+
+- Users
+    * Create User
+    * List Users
+    * Delete User
+
+- Functions
+    * Create Function
+    * List Functions
+    * Delete Function
+    * Upload Deployment
+    * Execute function (sync)
+    * Execute function (async)
 
 ## Contributing
 
