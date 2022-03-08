@@ -1,0 +1,9 @@
+version: '3.9'
+
+services:
+  playground-for-deno:
+    build: .
+    volumes:
+      - "./:/app"
+    working_dir: /app
+    command: "node src/app.js" 
