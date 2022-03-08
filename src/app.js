@@ -10,7 +10,7 @@ client.setKey('YOUR API KEY'); // Replace with your API Key
 client.setProject('YOUR PROJECT ID'); // Replace with your project ID
 // client.setJWT('jwt') // Use this to authenticate with JWT generated from Client SDK
 
-let collectionId
+let collectionId;
 let documentId;
 let userId;
 let bucketId;
