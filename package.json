@@ -7,6 +7,6 @@
   "license": "BSD-3-Clause",
   "dependencies": {
     "chalk": "^4.1.0",
-    "node-appwrite": "^5.0.0"
+    "node-appwrite": "^6.0.0"
   }
 }
