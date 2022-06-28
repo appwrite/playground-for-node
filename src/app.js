@@ -5,9 +5,9 @@ const path = require('path');
 
 // Config
 const client = new Client();
-client.setEndpoint('https://8080-appwrite-appwrite-fit3ikbto7v.ws-eu47.gitpod.io/v1'); // Replace with your endpoint
-client.setKey('dc4dcc8c2d6248108e63b9147f2dc1ea2377da15e3663825687ae6ff3076bfef0dd08b724a76458f310623a5e494bc6a396ed70dee4c753be319a677eadf228c24cadf6c64c2921959452b59fd39f42a0712b6278efc919d46200b245b93818b4cce9f5a45623b8b277faa366b74f712deba2c4838a69861266d2c022d167fec'); // Replace with your API Key
-client.setProject('dev'); // Replace with your project ID
+client.setEndpoint('http://YOUR_HOST/v1'); // Replace with your endpoint
+client.setKey('YOUR API KEY'); // Replace with your API Key
+client.setProject('YOUR PROJECT ID'); // Replace with your project ID
 // client.setJWT('jwt') // Use this to authenticate with JWT generated from Client SDK
 
 let collectionId;
