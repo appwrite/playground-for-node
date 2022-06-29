@@ -1,10 +1,10 @@
-const sdk = require('node-appwrite');
+const { Client, Databases, Functions, Account, Users, Storage, InputFile } = require('node-appwrite');
 const chalk = require('chalk');
 const fs = require('fs');
 const path = require('path');
 
 // Config
-const client = new sdk.Client();
+const client = new Client();
 client.setEndpoint('http://YOUR_HOST/v1'); // Replace with your endpoint
 client.setKey('YOUR API KEY'); // Replace with your API Key
 client.setProject('YOUR PROJECT ID'); // Replace with your project ID
@@ -21,7 +21,11 @@ let functionId;
 const createCollection = async () => {
   console.log(chalk.greenBright('Running Create Collection API'));
 
-  const database = new sdk.Database(client);
+  const database = new Databases(client, "default");
+
+  const databaseResponse = await database.create("Default");
+  console.log(databaseResponse);
+
   const response = await database.createCollection(
     "unique()", // ID of the collection
     'Movies', // Collection Name
@@ -46,7 +50,7 @@ const createCollection = async () => {
 const listCollections = async () => {
   console.log(chalk.greenBright('Running List Collections API'));
 
-  const database = new sdk.Database(client);
+  const database = new Databases(client, "default");
   const response = await database.listCollections();
   console.log(response);
 }
@@ -54,7 +58,7 @@ const listCollections = async () => {
 const listAttributes = async () => {
   console.log(chalk.greenBright('Running List Attributes API'));
 
-  const database = new sdk.Database(client);
+  const database = new Databases(client, "default");
   const response = await database.listAttributes(collectionId);
   console.log(response);
 }
@@ -62,7 +66,7 @@ const listAttributes = async () => {
 const getAccount = async () => {
   console.log(chalk.greenBright('Running Get Account API'));
 
-  const account = new sdk.Account(client);
+  const account = new Account(client);
   const response = await account.get();
   console.log(response);
 }
@@ -70,7 +74,7 @@ const getAccount = async () => {
 const addDocument = async () => {
   console.log(chalk.greenBright('Running Add Document API'));
 
-  const database = new sdk.Database(client);
+  const database = new Databases(client, "default");
   const response = await database.createDocument(collectionId,
     "unique()",
     {
@@ -86,7 +90,7 @@ const addDocument = async () => {
 const listDocuments = async () => {
   console.log(chalk.greenBright('Running List Documents API'));
 
-  const database = new sdk.Database(client);
+  const database = new Databases(client, "default");
   const response = await database.listDocuments(collectionId);
   console.log(response);
 }
@@ -94,7 +98,7 @@ const listDocuments = async () => {
 const deleteDocument = async () => {
   console.log(chalk.greenBright("Running Delete Document API"));
 
-  const database = new sdk.Database(client);
+  const database = new Databases(client, "default");
   const response = await database.deleteDocument(collectionId, documentId);
   console.log(response);
 }
@@ -102,7 +106,7 @@ const deleteDocument = async () => {
 const deleteCollection = async () => {
   console.log(chalk.greenBright("Running Delete Collection API"));
 
-  const database = new sdk.Database(client);
+  const database = new Databases(client, "default");
   const response = await database.deleteCollection(collectionId);
   console.log(response);
 }
@@ -110,7 +114,7 @@ const deleteCollection = async () => {
 const createBucket = async () => {
   console.log(chalk.greenBright("Running Create Bucket API"));
 
-  const storage = new sdk.Storage(client);
+  const storage = new Storage(client);
 
   const response = await storage.createBucket(
     "unique()",
@@ -126,8 +130,8 @@ const createBucket = async () => {
 const uploadFile = async () => {
   console.log(chalk.greenBright('Running Upload File API'));
 
-  const storage = new sdk.Storage(client);
-  const response = await storage.createFile(bucketId, 'unique()', './resources/nature.jpg', ["role:all"], ["role:all"]);
+  const storage = new Storage(client);
+  const response = await storage.createFile(bucketId, 'unique()', InputFile.fromPath("./resources/nature.jpg", "nature.jpg"), ["role:all"], ["role:all"]);
   console.log(response);
   fileId = response.$id;
 }
@@ -135,7 +139,7 @@ const uploadFile = async () => {
 const listBuckets = async () => {
   console.log(chalk.greenBright("Running List Buckets API"));
 
-  const storage = new sdk.Storage(client);
+  const storage = new Storage(client);
   const response = await storage.listBuckets();
   console.log(response);
 }
@@ -143,7 +147,7 @@ const listBuckets = async () => {
 const listFiles = async () => {
   console.log(chalk.greenBright("Running List Files API"));
 
-  const storage = new sdk.Storage(client);
+  const storage = new Storage(client);
   const response = await storage.listFiles(bucketId);
   console.log(response);
 }
@@ -151,7 +155,7 @@ const listFiles = async () => {
 const deleteFile = async () => {
   console.log(chalk.greenBright("Running Delete File API"));
 
-  const storage = new sdk.Storage(client);
+  const storage = new Storage(client);
   const response = await storage.deleteFile(bucketId, fileId);
   console.log(response);
 }
@@ -159,7 +163,7 @@ const deleteFile = async () => {
 const deleteBucket = async () => {
   console.log(chalk.greenBright("Running Delete Bucket API"));
 
-  const storage = new sdk.Storage(client);
+  const storage = new Storage(client);
   const response = await storage.deleteBucket(bucketId);
   console.log(response);
 }
@@ -167,7 +171,7 @@ const deleteBucket = async () => {
 const createUser = async (email, password, name) => {
   console.log(chalk.greenBright('Running Create User API'));
 
-  const users = new sdk.Users(client);
+  const users = new Users(client);
   const response = await users.create('unique()', email, password, name);
   console.log(response);
   userId = response.$id;
@@ -176,7 +180,7 @@ const createUser = async (email, password, name) => {
 const listUsers = async () => {
   console.log(chalk.greenBright('Running List Users API'));
 
-  const users = new sdk.Users(client);
+  const users = new Users(client);
   const response = await users.list();
   console.log(response);
 }
@@ -184,7 +188,7 @@ const listUsers = async () => {
 const deleteUser = async () => {
   console.log(chalk.greenBright('Running Delete User API'));
 
-  const users = new sdk.Users(client);
+  const users = new Users(client);
   const response = await users.delete(userId);
   console.log(response);
 }
@@ -192,7 +196,7 @@ const deleteUser = async () => {
 const createFunction = async () => {
   console.log(chalk.greenBright('Running Create Function API'));
 
-  const functions = new sdk.Functions(client);
+  const functions = new Functions(client);
   const response = await functions.create(
     "unique()",
     "Node Hello World",
@@ -206,7 +210,7 @@ const createFunction = async () => {
 const listFunctions = async () => {
   console.log(chalk.greenBright('Running List Functions API'));
 
-  const functions = new sdk.Functions(client);
+  const functions = new Functions(client);
   let response = await functions.list();
   console.log(response);
 }
@@ -214,8 +218,8 @@ const listFunctions = async () => {
 const uploadDeployment = async () => {
   console.log(chalk.greenBright('Running Upload Deployment API'));
 
-  const functions = new sdk.Functions(client);
-  let response = await functions.createDeployment(functionId, "index.js", "./resources/code.tar.gz", true);
+  const functions = new Functions(client);
+  let response = await functions.createDeployment(functionId, "index.js", InputFile.fromPath("./resources/code.tar.gz", "code.tar.gz"), true);
   console.log(response);
 
 
@@ -226,7 +230,7 @@ const uploadDeployment = async () => {
 const executeSync = async () => {
   console.log(chalk.greenBright('Running Execute Function API (sync)'));
 
-  const functions = new sdk.Functions(client);
+  const functions = new Functions(client);
   let response = await functions.createExecution(functionId, '', false);
   console.log(response);
 }
@@ -234,7 +238,7 @@ const executeSync = async () => {
 const executeAsync = async () => {
   console.log(chalk.greenBright('Running Execute Function API (async)'));
 
-  const functions = new sdk.Functions(client);
+  const functions = new Functions(client);
   let response = await functions.createExecution(functionId, '', true);
   console.log(response);
   const executionId = response.$id;
@@ -248,7 +252,7 @@ const executeAsync = async () => {
 const deleteFunction = async () => {
   console.log(chalk.greenBright('Running Delete function API'));
 
-  const functions = new sdk.Functions(client);
+  const functions = new Functions(client);
   const response = await functions.delete(functionId);
   console.log(response);
 }
