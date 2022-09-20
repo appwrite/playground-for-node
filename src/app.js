@@ -74,6 +74,19 @@ const createCollection = async () => {
 
     console.log("Waiting a little to ensure attributes are created ...");
     await new Promise((resolve) => setTimeout(resolve, 2000));
+
+    const yearIndexResponse = await databases.createIndex(
+        databaseId,
+        collectionId,
+        'key_release_year_asc',
+        'key',
+        ['release_year'],
+        ['ASC'],
+    );
+    console.log(yearIndexResponse);
+
+    console.log("Waiting a little to ensure index is created ...");
+    await new Promise((resolve) => setTimeout(resolve, 2000));
 }
 
 const listCollections = async () => {
