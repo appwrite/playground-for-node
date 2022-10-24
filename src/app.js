@@ -5,9 +5,9 @@ const path = require('path');
 
 // Config
 const client = new Client()
-    .setEndpoint('YOUR_ENDPOINT')   // Replace with your endpoint
-    .setProject('YOUR_PROJECT_ID')  // Replace with your project ID
-    .setKey('YOUR_API_KEY');        // Replace with your API Key
+    .setEndpoint('https://demo.appwrite.io/v1')   // Replace with your endpoint
+    .setProject('playground')  // Replace with your project ID
+    .setKey('fff3b3caa94f9b9ab318c1bbf7038752f3a0780ad689b76e94ddb6c6da78ce3a0e25a8b9d31fe54a57a86ce24cd38ad91fbf9ffca70d54f364e65f9e0ae830319a46f01c81bb82371ca3da5409fd8224a61fc76a5ed3b5a476f56c2eaf85f9f2e627a4c1534bcaf5225b702d5150013c795acd888b46edca2878be40f4820cbf');        // Replace with your API Key
    //.setJWT('jwt');                // Use this to authenticate with JWT generated from Client SDK
 
 const databases = new Databases(client);
@@ -26,14 +26,53 @@ let functionId;
 let executionId;
 
 // List of API Definitions
+const createDatabase = async () => {
+    console.log(chalk.greenBright('Running Create Database API'));
+
+    const response = await databases.create(ID.unique(), "Default");
+
+    databaseId = response.$id;
+
+    console.log(response);
+}
+
+const listDatabases = async () => {
+    console.log(chalk.greenBright("Running List Databases API"));
+
+    const response = await databases.list();
+
+    console.log(response);
+}
+
+const getDatabase = async () => {
+    console.log(chalk.greenBright("Running Get Database API"));
+
+    const response = await databases.get(databaseId);
+
+    console.log(response);
+}
+
+const updateDatabase = async () => {
+    console.log(chalk.greenBright('Running Update Database API'));
+
+    const response = await databases.update(
+        databaseId,
+        "Updated Database"
+    );
+
+    console.log(response);
+}
+
+const deleteDatabase = async () => {
+    console.log(chalk.greenBright("Running Delete Database API"));
+
+    const response = await databases.delete(databaseId);
+
+    console.log(response);
+}
+
 const createCollection = async () => {
     console.log(chalk.greenBright('Running Create Collection API'));
-
-    const databaseResponse = await databases.create(ID.unique(), "Default");
-
-    databaseId = databaseResponse.$id;
-
-    console.log(databaseResponse);
 
     const response = await databases.createCollection(
         databaseId,         // ID of the collection
@@ -47,8 +86,8 @@ const createCollection = async () => {
         ]
     );
 
-    console.log(response);
     collectionId = response.$id;
+    console.log(response);
 
     const nameAttributeResponse = await databases.createStringAttribute(
         databaseId,
@@ -97,6 +136,34 @@ const listCollections = async () => {
     console.log(response);
 }
 
+const getCollection = async () => {
+    console.log(chalk.greenBright("Running Get Collection API"));
+
+    const response = await databases.getCollection(databaseId, collectionId);
+
+    console.log(response);
+}
+
+const updateCollection = async () => {
+    console.log(chalk.greenBright("Running Update Collection API"));
+
+    const response = await databases.updateCollection(
+        databaseId,
+        collectionId,
+        "Updated Collection"
+    );
+
+    console.log(response);
+}
+
+const deleteCollection = async () => {
+    console.log(chalk.greenBright("Running Delete Collection API"));
+
+    const response = await databases.deleteCollection(databaseId, collectionId);
+
+    console.log(response);
+}
+
 const listAttributes = async () => {
     console.log(chalk.greenBright('Running List Attributes API'));
 
@@ -105,15 +172,7 @@ const listAttributes = async () => {
     console.log(response);
 }
 
-const getAccount = async () => {
-    console.log(chalk.greenBright('Running List Users API'));
-
-    const response = await account.get();
-
-    console.log(response);
-}
-
-const addDocument = async () => {
+const createDocument = async () => {
     console.log(chalk.greenBright('Running Add Document API'));
 
     const response = await databases.createDocument(
@@ -149,6 +208,33 @@ const listDocuments = async () => {
     console.log(response);
 }
 
+const getDocument = async () => {
+    console.log(chalk.greenBright("Running Get Document API"));
+
+    const response = await databases.getDocument(
+        databaseId,
+        collectionId,
+        documentId
+    );
+
+    console.log(response);
+}
+
+const updateDocument = async () => {
+    console.log(chalk.greenBright("Running Update Document API"));
+
+    const response = await databases.updateDocument(
+        databaseId,
+        collectionId,
+        documentId,
+        {
+            release_year: 2005
+        }
+    );
+
+    console.log(response);
+}
+
 const deleteDocument = async () => {
     console.log(chalk.greenBright("Running Delete Document API"));
 
@@ -158,13 +244,6 @@ const deleteDocument = async () => {
         documentId
     );
 
-    console.log(response);
-}
-
-const deleteCollection = async () => {
-    console.log(chalk.greenBright("Running Delete Collection API"));
-
-    const response = await databases.deleteCollection(databaseId, collectionId);
     console.log(response);
 }
 
@@ -182,6 +261,41 @@ const createBucket = async () => {
         ]
     );
     bucketId = response.$id;
+
+    console.log(response);
+}
+
+const listBuckets = async () => {
+    console.log(chalk.greenBright("Running List Buckets API"));
+
+    const response = await storage.listBuckets();
+
+    console.log(response);
+}
+
+const getBucket = async () => {
+    console.log(chalk.greenBright("Running Get Bucket API"));
+
+    const response = await storage.getBucket(bucketId);
+
+    console.log(response);
+}
+
+const updateBucket = async () => {
+    console.log(chalk.greenBright("Running Update Bucket API"));
+
+    const response = await storage.updateBucket(
+        bucketId,
+        "Updated Bucket"
+    );
+
+    console.log(response);
+}
+
+const deleteBucket = async () => {
+    console.log(chalk.greenBright("Running Delete Bucket API"));
+
+    const response = await storage.deleteBucket(bucketId);
 
     console.log(response);
 }
@@ -204,18 +318,34 @@ const uploadFile = async () => {
     console.log(response);
 }
 
-const listBuckets = async () => {
-    console.log(chalk.greenBright("Running List Buckets API"));
-
-    const response = await storage.listBuckets();
-
-    console.log(response);
-}
-
 const listFiles = async () => {
     console.log(chalk.greenBright("Running List Files API"));
 
     const response = await storage.listFiles(bucketId);
+
+    console.log(response);
+}
+
+const getFile = async () => {
+    console.log(chalk.greenBright("Running Get File API"));
+
+    const response = await storage.getFile(bucketId, fileId);
+
+    console.log(response);
+}
+
+const updateFile = async () => {
+    console.log(chalk.greenBright("Running Update File API"));
+
+    const response = await storage.updateFile(
+        bucketId,
+        fileId,
+        [
+            Permission.read(Role.any()),
+            Permission.update(Role.any()),
+            Permission.delete(Role.any()),
+        ]
+    );
 
     console.log(response);
 }
@@ -228,23 +358,15 @@ const deleteFile = async () => {
     console.log(response);
 }
 
-const deleteBucket = async () => {
-    console.log(chalk.greenBright("Running Delete Bucket API"));
-
-    const response = await storage.deleteBucket(bucketId);
-
-    console.log(response);
-}
-
-const createUser = async (email, password, name) => {
+const createUser = async () => {
     console.log(chalk.greenBright('Running Create User API'));
 
     const response = await users.create(
         ID.unique(),
-        email,
+        new Date().getTime() + '@example.com',
         null,
-        password,
-        name
+        'user@123',
+        'Some User'
     );
     userId = response.$id;
 
@@ -255,6 +377,30 @@ const listUsers = async () => {
     console.log(chalk.greenBright('Running List Users API'));
 
     const response = await users.list();
+
+    console.log(response);
+}
+
+const getUser = async () => {
+    console.log(chalk.greenBright('Running Get User API'));
+
+    const response = await users.get(userId);
+
+    console.log(response);
+}
+
+const getAccount = async () => {
+    console.log(chalk.greenBright('Running List Users API'));
+
+    const response = await account.get();
+
+    console.log(response);
+}
+
+const updateUserName = async () => {
+    console.log(chalk.greenBright('Running Update User Name API'));
+
+    const response = await users.updateName(userId, 'Updated Name');
 
     console.log(response);
 }
@@ -276,14 +422,24 @@ const createFunction = async () => {
         [Role.any()],
         "node-16.0"
     );
-    console.log(response);
+
     functionId = response.$id;
+
+    console.log(response);
 }
 
 const listFunctions = async () => {
     console.log(chalk.greenBright('Running List Functions API'));
 
     let response = await functions.list();
+
+    console.log(response);
+}
+
+const getFunction = async () => {
+    console.log(chalk.greenBright('Running Get Function API'));
+
+    let response = await functions.get(functionId);
 
     console.log(response);
 }
@@ -316,8 +472,10 @@ const executeAsync = async () => {
     console.log(chalk.greenBright('Running Execute Function API (async)'));
 
     let response = await functions.createExecution(functionId, '', true);
-    console.log(response);
+
     executionId = response.$id;
+
+    console.log(response);
 
     console.log("Waiting a little to ensure execution is finished ...");
     await new Promise((resolve) => setTimeout(resolve, 2000));
@@ -336,28 +494,44 @@ const deleteFunction = async () => {
 }
 
 const runAllTasks = async () => {
+    await createDatabase();
+    await listDatabases();
+    await getDatabase();
+    await updateDatabase();
+
     await createCollection();
     await listCollections();
+    await getCollection();
+    await updateCollection();
     await listAttributes();
 
-    await addDocument();
+    await createDocument();
     await listDocuments();
+    await getDocument();
+    await updateDocument();
 
     await deleteDocument();
     await deleteCollection();
+    await deleteDatabase();
 
     await createBucket();
     await listBuckets();
+    await getBucket();
+    await updateBucket();
 
     await uploadFile();
     await listFiles();
+    await getFile();
+    await updateFile();
 
     await deleteFile();
     await deleteBucket();
 
     // await getAccount() // works only with JWT
-    await createUser(new Date().getTime() + '@example.com', 'user@123', 'Some User');
+    await createUser();
     await listUsers();
+    await getUser();
+    await updateUserName();
     await deleteUser();
 
     await createFunction();
@@ -370,7 +544,7 @@ const runAllTasks = async () => {
 
 runAllTasks()
     .then(() => {
-        console.log(chalk.green.bold('Successfully Ran playground!'))
+        console.log(chalk.green.bold('Successfully ran playground!'))
     })
     .catch(err => {
         console.error(err)
