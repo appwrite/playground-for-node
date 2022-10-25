@@ -5,9 +5,9 @@ const path = require('path');
 
 // Config
 const client = new Client()
-    .setEndpoint('https://demo.appwrite.io/v1')   // Replace with your endpoint
-    .setProject('playground')  // Replace with your project ID
-    .setKey('fff3b3caa94f9b9ab318c1bbf7038752f3a0780ad689b76e94ddb6c6da78ce3a0e25a8b9d31fe54a57a86ce24cd38ad91fbf9ffca70d54f364e65f9e0ae830319a46f01c81bb82371ca3da5409fd8224a61fc76a5ed3b5a476f56c2eaf85f9f2e627a4c1534bcaf5225b702d5150013c795acd888b46edca2878be40f4820cbf');        // Replace with your API Key
+    .setEndpoint('YOUR_ENDPOINT')   // Replace with your endpoint
+    .setProject('YOUR_PROJECT_ID')  // Replace with your project ID
+    .setKey('YOUR_API_KEY');        // Replace with your API Key
    //.setJWT('jwt');                // Use this to authenticate with JWT generated from Client SDK
 
 const databases = new Databases(client);
