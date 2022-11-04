@@ -3,10 +3,13 @@
   "version": "1.0.0",
   "main": "index.js",
   "repository": "https://github.com/appwrite/playground-for-node.git",
-  "author": "Bradley Schofield <ionic@ionicisere.co.uk>",
   "license": "BSD-3-Clause",
+  "scripts": {
+    "start": "node src/app.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
   "dependencies": {
     "chalk": "^4.1.0",
-    "node-appwrite": "^7.0.0"
+    "node-appwrite": "^8.0.0"
   }
 }
