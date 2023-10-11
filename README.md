@@ -20,13 +20,13 @@ This playground doesn't include any NodeJS best practices but rather intended to
 
 1. Clone this repository.
 2. `cd` into the repository.
-3. Open the `app.js` file found in the root of the cloned repository.
-4. Copy Project ID, endpoint and API key from Appwrite console into `app.js`
+3. Reanme `.env.example` to `.env`.
+4. Copy Project ID, endpoint and API key from Appwrite console into `.env`.
 5. Run the playground:
-    NodeJS:
+    - NodeJS:
         - Install dependencies `npm install`
         - Execute the command `node app.js`
-    Docker:
+    - Docker:
         - Execute the command `docker compose up`
 6. You will see the JSON response in the console.
 

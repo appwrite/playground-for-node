@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "chalk": "^4.1.0",
+    "dot-env": "^0.0.1",
     "node-appwrite": "^8.0.0"
   }
 }
