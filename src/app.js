@@ -2,13 +2,14 @@ const { Client, Databases, Functions, Account, Users, Storage, InputFile, Query,
 const chalk = require('chalk');
 const fs = require('fs');
 const path = require('path');
+require('dotenv').config();
 
 // Config
 const client = new Client()
-    .setEndpoint('YOUR_ENDPOINT')   // Replace with your endpoint
-    .setProject('YOUR_PROJECT_ID')  // Replace with your project ID
-    .setKey('YOUR_API_KEY');        // Replace with your API Key
-   //.setJWT('jwt');                // Use this to authenticate with JWT generated from Client SDK
+    .setEndpoint(process.env.YOUR_ENDPOINT)   // Replace with your endpoint
+    .setProject(process.env.YOUR_PROJECT_ID)  // Replace with your project ID
+    .setKey(process.env.YOUR_API_KEY);        // Replace with your API Key
+   //.setJWT(process.env.jwt);                // Use this to authenticate with JWT generated from Client SDK
 
 const databases = new Databases(client);
 const functions = new Functions(client);
