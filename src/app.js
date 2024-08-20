@@ -462,6 +462,14 @@ const uploadDeployment = async () => {
     await new Promise((resolve) => setTimeout(resolve, 3000));
 }
 
+const listDeployments = async () => {
+    console.log(chalk.greenBright('Running List Deployments API'));
+
+    let response = await functions.listDeployments(functionId);
+
+    console.log(response);
+}
+
 const executeSync = async () => {
     console.log(chalk.greenBright('Running Execute Function API (sync)'));
 
@@ -539,6 +547,7 @@ const runAllTasks = async () => {
     await createFunction();
     await listFunctions();
     await uploadDeployment();
+    await listDeployments();
     await executeSync();
     await executeAsync();
     await deleteFunction();
