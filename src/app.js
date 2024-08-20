@@ -1,7 +1,8 @@
-const { Client, Databases, Functions, Account, Users, Storage, InputFile, Query, Permission, Role, ID } = require('node-appwrite');
+const { Client, Databases, Functions, Account, Users, Storage, Query, Permission, Role, ID } = require('node-appwrite');
 const chalk = require('chalk');
 const fs = require('fs');
 const path = require('path');
+const { InputFile } = require('node-appwrite/file')
 
 // Config
 const client = new Client()
@@ -340,6 +341,7 @@ const updateFile = async () => {
     const response = await storage.updateFile(
         bucketId,
         fileId,
+        "abc",
         [
             Permission.read(Role.any()),
             Permission.update(Role.any()),
@@ -419,8 +421,8 @@ const createFunction = async () => {
     const response = await functions.create(
         ID.unique(),
         "Node Hello World",
+        "node-16.0",
         [Role.any()],
-        "node-16.0"
     );
 
     functionId = response.$id;
@@ -449,9 +451,9 @@ const uploadDeployment = async () => {
 
     let response = await functions.createDeployment(
         functionId,
-        "index.js",
         InputFile.fromPath("./resources/code.tar.gz", "code.tar.gz"),
-        true
+        true,
+        "index.js"
     );
 
     console.log(response);
@@ -460,10 +462,18 @@ const uploadDeployment = async () => {
     await new Promise((resolve) => setTimeout(resolve, 3000));
 }
 
+const listDeployments = async () => {
+    console.log(chalk.greenBright('Running List Deployments API'));
+
+    let response = await functions.listDeployments(functionId);
+
+    console.log(response);
+}
+
 const executeSync = async () => {
     console.log(chalk.greenBright('Running Execute Function API (sync)'));
 
-    let response = await functions.createExecution(functionId);
+    let response = await functions.createExecution(functionId, "", false, "/", "GET", {});
 
     console.log(response);
 }
@@ -537,6 +547,7 @@ const runAllTasks = async () => {
     await createFunction();
     await listFunctions();
     await uploadDeployment();
+    await listDeployments();
     await executeSync();
     await executeAsync();
     await deleteFunction();
