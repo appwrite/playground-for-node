@@ -423,6 +423,13 @@ const createFunction = async () => {
         "Node Hello World",
         "node-16.0",
         [Role.any()],
+        [],
+        '',
+        15,
+        true,
+        true,
+        "index.js",
+        ''
     );
 
     functionId = response.$id;
@@ -474,6 +481,10 @@ const executeSync = async () => {
     console.log(chalk.greenBright('Running Execute Function API (sync)'));
 
     let response = await functions.createExecution(functionId, "", false, "/", "GET", {});
+
+    // sleep for 3 seconds
+    console.log("Waiting a little to ensure execution is finished ...");
+    await new Promise((resolve) => setTimeout(resolve, 3000));
 
     console.log(response);
 }
