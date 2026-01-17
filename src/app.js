@@ -1,8 +1,8 @@
-const { Client, Databases, Functions, Account, Users, Storage, Query, Permission, Role, ID } = require('node-appwrite');
+const { Client, Databases, Functions, Account, Users, Storage, Query, Permission, Role, ID, Runtime, ExecutionMethod } = require('node-appwrite');
 const chalk = require('chalk');
 const fs = require('fs');
 const path = require('path');
-const { InputFile } = require('node-appwrite/file')
+const { InputFile } = require('node-appwrite/file');
 
 // Config
 const client = new Client()
@@ -25,6 +25,8 @@ let bucketId;
 let fileId;
 let functionId;
 let executionId;
+let deploymentId;
+let variableId;
 
 // List of API Definitions
 const createDatabase = async () => {
@@ -463,10 +465,31 @@ const uploadDeployment = async () => {
         "index.js"
     );
 
+    deploymentId = response.$id;
     console.log(response);
 
-    console.log("Waiting a little to ensure deployment has built ...");
-    await new Promise((resolve) => setTimeout(resolve, 3000));
+    console.log("Waiting for deployment to be ready ...");
+    
+    // Poll for deployment status until it's ready
+    let maxAttempts = 30;
+    let attempts = 0;
+    while (attempts < maxAttempts) {
+        await new Promise((resolve) => setTimeout(resolve, 2000));
+        const deployment = await functions.getDeployment(functionId, deploymentId);
+        console.log(`Deployment status: ${deployment.status}`);
+        
+        if (deployment.status === 'ready') {
+            console.log("Deployment is ready!");
+            break;
+        } else if (deployment.status === 'failed') {
+            throw new Error("Deployment failed to build");
+        }
+        attempts++;
+    }
+    
+    if (attempts >= maxAttempts) {
+        throw new Error("Deployment timed out waiting to be ready");
+    }
 }
 
 const listDeployments = async () => {
