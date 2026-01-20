@@ -11,6 +11,8 @@ const client = new Client()
     .setKey('YOUR_API_KEY');        // Replace with your API Key
    //.setJWT('jwt');                // Use this to authenticate with JWT generated from Client SDK
 
+const randomEmail = `user-${Math.random().toString(36).substring(7)}@example.com`;
+
 const databases = new Databases(client);
 const functions = new Functions(client);
 const storage = new Storage(client);
@@ -21,6 +23,7 @@ let databaseId;
 let collectionId;
 let documentId;
 let userId;
+let sessionId;
 let bucketId;
 let fileId;
 let functionId;
@@ -367,7 +370,7 @@ const createUser = async () => {
 
     const response = await users.create(
         ID.unique(),
-        new Date().getTime() + '@example.com',
+        randomEmail,
         null,
         'user@123',
         'Some User'
@@ -416,6 +419,38 @@ const deleteUser = async () => {
 
     console.log(response);
 }
+
+const loginUsingEmailPassword = async ()  => {
+    console.log(chalk.greenBright('Running Login Using Email Password API'));
+
+    const response = await account.createEmailPasswordSession(
+        randomEmail,
+        'user@123'
+    );
+
+    sessionId = response.$id;
+    console.log(response);
+}
+
+const createJwt = async () => {
+
+    console.log(chalk.greenBright('Running JWT API'));
+
+    const response = await users.createJWT(userId, sessionId);    
+    console.log(response);
+};
+
+const changeUserPassword = async () => {
+
+    console.log(chalk.greenBright('Running Change Password API'));
+
+    const response = await users.updatePassword(
+      userId,
+      "Pass@101"
+    );
+    
+    console.log(response)
+};
 
 const createFunction = async () => {
     console.log(chalk.greenBright('Running Create Function API'));
@@ -576,6 +611,9 @@ const runAllTasks = async () => {
     await listUsers();
     await getUser();
     await updateUserName();
+    await loginUsingEmailPassword();
+    await createJwt();
+    await changeUserPassword();
     await deleteUser();
 
     await createFunction();
