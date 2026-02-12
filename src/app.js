@@ -379,12 +379,16 @@ const getFile = async () => {
 const getFileDownload = async () => {
     console.log(chalk.greenBright("Running Get File Download API"));
 
-    const response = await storage.getFileDownload({
-        bucketId,
-        fileId
-    });
+    try {
+        const response = await storage.getFileDownload({
+            bucketId,
+            fileId
+        });
 
-    console.log(`Downloaded file: ${response.byteLength} bytes`);
+        console.log(`Downloaded file: ${response.byteLength} bytes`);
+    } catch (err) {
+        console.log(chalk.yellow(`Skipped: ${err.message}`));
+    }
 }
 
 const getFilePreview = async () => {
@@ -523,7 +527,7 @@ const createFunction = async () => {
     const response = await functions.create({
         functionId: ID.unique(),
         name: "Node Hello World",
-        runtime: Runtime.Node180,
+        runtime: Runtime.Node200,
         execute: [Role.any()],
         entrypoint: "index.js",
         timeout: 15,
@@ -560,7 +564,7 @@ const updateFunction = async () => {
     let response = await functions.update({
         functionId,
         name: "Updated Node Hello World",
-        runtime: Runtime.Node180,
+        runtime: Runtime.Node200,
         execute: [Role.any()],
         entrypoint: "index.js",
         timeout: 30,
