@@ -1,4 +1,4 @@
-const { Client, Databases, Functions, Account, Users, Storage, Query, Permission, Role, ID, Runtime, ExecutionMethod } = require('node-appwrite');
+const { Client, Databases, Functions, Account, Users, Storage, Query, Permission, Role, ID, Runtime, ExecutionMethod, IndexType } = require('node-appwrite');
 const chalk = require('chalk');
 const fs = require('fs');
 const path = require('path');
@@ -32,7 +32,10 @@ let variableId;
 const createDatabase = async () => {
     console.log(chalk.greenBright('Running Create Database API'));
 
-    const response = await databases.create(ID.unique(), "Default");
+    const response = await databases.create({
+        databaseId: ID.unique(),
+        name: "Default"
+    });
 
     databaseId = response.$id;
 
@@ -50,7 +53,9 @@ const listDatabases = async () => {
 const getDatabase = async () => {
     console.log(chalk.greenBright("Running Get Database API"));
 
-    const response = await databases.get(databaseId);
+    const response = await databases.get({
+        databaseId
+    });
 
     console.log(response);
 }
@@ -58,10 +63,10 @@ const getDatabase = async () => {
 const updateDatabase = async () => {
     console.log(chalk.greenBright('Running Update Database API'));
 
-    const response = await databases.update(
+    const response = await databases.update({
         databaseId,
-        "Updated Database"
-    );
+        name: "Updated Database"
+    });
 
     console.log(response);
 }
@@ -69,7 +74,9 @@ const updateDatabase = async () => {
 const deleteDatabase = async () => {
     console.log(chalk.greenBright("Running Delete Database API"));
 
-    const response = await databases.delete(databaseId);
+    const response = await databases.delete({
+        databaseId
+    });
 
     console.log(response);
 }
@@ -77,54 +84,55 @@ const deleteDatabase = async () => {
 const createCollection = async () => {
     console.log(chalk.greenBright('Running Create Collection API'));
 
-    const response = await databases.createCollection(
-        databaseId,         // ID of the collection
-        ID.unique(),        // Collection ID
-        "Collection", // Collection Name
-        [
+    const response = await databases.createCollection({
+        databaseId,
+        collectionId: ID.unique(),
+        name: "Collection",
+        permissions: [
             Permission.read(Role.any()),
             Permission.create(Role.users()),
             Permission.update(Role.users()),
             Permission.delete(Role.users()),
         ]
-    );
+    });
 
     collectionId = response.$id;
     console.log(response);
 
-    const nameAttributeResponse = await databases.createStringAttribute(
+    const nameAttributeResponse = await databases.createStringAttribute({
         databaseId,
         collectionId,
-        'name',
-        255,
-        false,
-        "Empty Name",
-        false
-    );
+        key: 'name',
+        size: 255,
+        required: false,
+        xdefault: "Empty Name",
+        array: false
+    });
     console.log(nameAttributeResponse);
 
-    const yearAttributeResponse = await databases.createIntegerAttribute(
+    const yearAttributeResponse = await databases.createIntegerAttribute({
         databaseId,
         collectionId,
-        'release_year',
-        false,
-        0, 5000,
-        1970,
-        false
-    );
+        key: 'release_year',
+        required: false,
+        min: 0,
+        max: 5000,
+        xdefault: 1970,
+        array: false
+    });
     console.log(yearAttributeResponse);
 
     console.log("Waiting a little to ensure attributes are created ...");
     await new Promise((resolve) => setTimeout(resolve, 2000));
 
-    const yearIndexResponse = await databases.createIndex(
+    const yearIndexResponse = await databases.createIndex({
         databaseId,
         collectionId,
-        'key_release_year_asc',
-        'key',
-        ['release_year'],
-        ['ASC'],
-    );
+        key: 'key_release_year_asc',
+        type: IndexType.Key,
+        attributes: ['release_year'],
+        orders: ['ASC'],
+    });
     console.log(yearIndexResponse);
 
     console.log("Waiting a little to ensure index is created ...");
@@ -134,7 +142,9 @@ const createCollection = async () => {
 const listCollections = async () => {
     console.log(chalk.greenBright('Running List Collections API'));
 
-    const response = await databases.listCollections(databaseId);
+    const response = await databases.listCollections({
+        databaseId
+    });
 
     console.log(response);
 }
@@ -142,7 +152,10 @@ const listCollections = async () => {
 const getCollection = async () => {
     console.log(chalk.greenBright("Running Get Collection API"));
 
-    const response = await databases.getCollection(databaseId, collectionId);
+    const response = await databases.getCollection({
+        databaseId,
+        collectionId
+    });
 
     console.log(response);
 }
@@ -150,11 +163,11 @@ const getCollection = async () => {
 const updateCollection = async () => {
     console.log(chalk.greenBright("Running Update Collection API"));
 
-    const response = await databases.updateCollection(
+    const response = await databases.updateCollection({
         databaseId,
         collectionId,
-        "Updated Collection"
-    );
+        name: "Updated Collection"
+    });
 
     console.log(response);
 }
@@ -162,7 +175,10 @@ const updateCollection = async () => {
 const deleteCollection = async () => {
     console.log(chalk.greenBright("Running Delete Collection API"));
 
-    const response = await databases.deleteCollection(databaseId, collectionId);
+    const response = await databases.deleteCollection({
+        databaseId,
+        collectionId
+    });
 
     console.log(response);
 }
@@ -170,7 +186,21 @@ const deleteCollection = async () => {
 const listAttributes = async () => {
     console.log(chalk.greenBright('Running List Attributes API'));
 
-    const response = await databases.listAttributes(databaseId, collectionId);
+    const response = await databases.listAttributes({
+        databaseId,
+        collectionId
+    });
+
+    console.log(response);
+}
+
+const listIndexes = async () => {
+    console.log(chalk.greenBright('Running List Indexes API'));
+
+    const response = await databases.listIndexes({
+        databaseId,
+        collectionId
+    });
 
     console.log(response);
 }
@@ -178,20 +208,20 @@ const listAttributes = async () => {
 const createDocument = async () => {
     console.log(chalk.greenBright('Running Add Document API'));
 
-    const response = await databases.createDocument(
+    const response = await databases.createDocument({
         databaseId,
         collectionId,
-        ID.unique(),
-        {
+        documentId: ID.unique(),
+        data: {
             name: 'Spider Man',
             release_year: 1920
         },
-        [
+        permissions: [
             Permission.read(Role.any()),
             Permission.update(Role.users()),
             Permission.delete(Role.users()),
         ]
-    );
+    });
     documentId = response.$id;
 
     console.log(response);
@@ -200,13 +230,13 @@ const createDocument = async () => {
 const listDocuments = async () => {
     console.log(chalk.greenBright('Running List Documents API'));
 
-    const response = await databases.listDocuments(
+    const response = await databases.listDocuments({
         databaseId,
         collectionId,
-        [
+        queries: [
             Query.equal('release_year', 1920),
         ]
-    );
+    });
 
     console.log(response);
 }
@@ -214,11 +244,11 @@ const listDocuments = async () => {
 const getDocument = async () => {
     console.log(chalk.greenBright("Running Get Document API"));
 
-    const response = await databases.getDocument(
+    const response = await databases.getDocument({
         databaseId,
         collectionId,
         documentId
-    );
+    });
 
     console.log(response);
 }
@@ -226,14 +256,14 @@ const getDocument = async () => {
 const updateDocument = async () => {
     console.log(chalk.greenBright("Running Update Document API"));
 
-    const response = await databases.updateDocument(
+    const response = await databases.updateDocument({
         databaseId,
         collectionId,
         documentId,
-        {
+        data: {
             release_year: 2005
         }
-    );
+    });
 
     console.log(response);
 }
@@ -241,11 +271,11 @@ const updateDocument = async () => {
 const deleteDocument = async () => {
     console.log(chalk.greenBright("Running Delete Document API"));
 
-    const response = await databases.deleteDocument(
+    const response = await databases.deleteDocument({
         databaseId,
         collectionId,
         documentId
-    );
+    });
 
     console.log(response);
 }
@@ -253,16 +283,16 @@ const deleteDocument = async () => {
 const createBucket = async () => {
     console.log(chalk.greenBright("Running Create Bucket API"));
 
-    const response = await storage.createBucket(
-        ID.unique(),
-        "All Files",
-        [
+    const response = await storage.createBucket({
+        bucketId: ID.unique(),
+        name: "All Files",
+        permissions: [
             Permission.read(Role.any()),
             Permission.create(Role.users()),
             Permission.update(Role.users()),
             Permission.delete(Role.users()),
         ]
-    );
+    });
     bucketId = response.$id;
 
     console.log(response);
@@ -279,7 +309,9 @@ const listBuckets = async () => {
 const getBucket = async () => {
     console.log(chalk.greenBright("Running Get Bucket API"));
 
-    const response = await storage.getBucket(bucketId);
+    const response = await storage.getBucket({
+        bucketId
+    });
 
     console.log(response);
 }
@@ -287,10 +319,10 @@ const getBucket = async () => {
 const updateBucket = async () => {
     console.log(chalk.greenBright("Running Update Bucket API"));
 
-    const response = await storage.updateBucket(
+    const response = await storage.updateBucket({
         bucketId,
-        "Updated Bucket"
-    );
+        name: "Updated Bucket"
+    });
 
     console.log(response);
 }
@@ -298,7 +330,9 @@ const updateBucket = async () => {
 const deleteBucket = async () => {
     console.log(chalk.greenBright("Running Delete Bucket API"));
 
-    const response = await storage.deleteBucket(bucketId);
+    const response = await storage.deleteBucket({
+        bucketId
+    });
 
     console.log(response);
 }
@@ -306,16 +340,16 @@ const deleteBucket = async () => {
 const uploadFile = async () => {
     console.log(chalk.greenBright('Running Upload File API'));
 
-    const response = await storage.createFile(
+    const response = await storage.createFile({
         bucketId,
-        ID.unique(),
-        InputFile.fromPath("./resources/nature.jpg", "nature.jpg"),
-        [
+        fileId: ID.unique(),
+        file: InputFile.fromPath("./resources/nature.jpg", "nature.jpg"),
+        permissions: [
             Permission.read(Role.any()),
             Permission.update(Role.users()),
             Permission.delete(Role.users()),
         ]
-    );
+    });
     fileId = response.$id;
 
     console.log(response);
@@ -324,7 +358,9 @@ const uploadFile = async () => {
 const listFiles = async () => {
     console.log(chalk.greenBright("Running List Files API"));
 
-    const response = await storage.listFiles(bucketId);
+    const response = await storage.listFiles({
+        bucketId
+    });
 
     console.log(response);
 }
@@ -332,24 +368,59 @@ const listFiles = async () => {
 const getFile = async () => {
     console.log(chalk.greenBright("Running Get File API"));
 
-    const response = await storage.getFile(bucketId, fileId);
+    const response = await storage.getFile({
+        bucketId,
+        fileId
+    });
 
     console.log(response);
+}
+
+const getFileDownload = async () => {
+    console.log(chalk.greenBright("Running Get File Download API"));
+
+    try {
+        const response = await storage.getFileDownload({
+            bucketId,
+            fileId
+        });
+
+        console.log(`Downloaded file: ${response.byteLength} bytes`);
+    } catch (err) {
+        console.log(chalk.yellow(`Skipped: ${err.message}`));
+    }
+}
+
+const getFilePreview = async () => {
+    console.log(chalk.greenBright("Running Get File Preview API"));
+
+    try {
+        const response = await storage.getFilePreview({
+            bucketId,
+            fileId,
+            width: 200,
+            height: 200
+        });
+
+        console.log(`Preview file: ${response.byteLength} bytes`);
+    } catch (err) {
+        console.log(chalk.yellow(`Skipped: ${err.message}`));
+    }
 }
 
 const updateFile = async () => {
     console.log(chalk.greenBright("Running Update File API"));
 
-    const response = await storage.updateFile(
+    const response = await storage.updateFile({
         bucketId,
         fileId,
-        "abc",
-        [
+        name: "abc",
+        permissions: [
             Permission.read(Role.any()),
             Permission.update(Role.any()),
             Permission.delete(Role.any()),
         ]
-    );
+    });
 
     console.log(response);
 }
@@ -357,7 +428,10 @@ const updateFile = async () => {
 const deleteFile = async () => {
     console.log(chalk.greenBright("Running Delete File API"));
 
-    const response = await storage.deleteFile(bucketId, fileId);
+    const response = await storage.deleteFile({
+        bucketId,
+        fileId
+    });
 
     console.log(response);
 }
@@ -365,13 +439,12 @@ const deleteFile = async () => {
 const createUser = async () => {
     console.log(chalk.greenBright('Running Create User API'));
 
-    const response = await users.create(
-        ID.unique(),
-        new Date().getTime() + '@example.com',
-        null,
-        'user@123',
-        'Some User'
-    );
+    const response = await users.create({
+        userId: ID.unique(),
+        email: new Date().getTime() + '@example.com',
+        password: 'user@123',
+        name: 'Some User'
+    });
     userId = response.$id;
 
     console.log(response);
@@ -388,7 +461,9 @@ const listUsers = async () => {
 const getUser = async () => {
     console.log(chalk.greenBright('Running Get User API'));
 
-    const response = await users.get(userId);
+    const response = await users.get({
+        userId
+    });
 
     console.log(response);
 }
@@ -404,7 +479,34 @@ const getAccount = async () => {
 const updateUserName = async () => {
     console.log(chalk.greenBright('Running Update User Name API'));
 
-    const response = await users.updateName(userId, 'Updated Name');
+    const response = await users.updateName({
+        userId,
+        name: 'Updated Name'
+    });
+
+    console.log(response);
+}
+
+const getUserPrefs = async () => {
+    console.log(chalk.greenBright('Running Get User Preferences API'));
+
+    const response = await users.getPrefs({
+        userId
+    });
+
+    console.log(response);
+}
+
+const updateUserPrefs = async () => {
+    console.log(chalk.greenBright('Running Update User Preferences API'));
+
+    const response = await users.updatePrefs({
+        userId,
+        prefs: {
+            theme: 'dark',
+            language: 'en'
+        }
+    });
 
     console.log(response);
 }
@@ -412,7 +514,9 @@ const updateUserName = async () => {
 const deleteUser = async () => {
     console.log(chalk.greenBright('Running Delete User API'));
 
-    const response = await users.delete(userId);
+    const response = await users.delete({
+        userId
+    });
 
     console.log(response);
 }
@@ -420,19 +524,16 @@ const deleteUser = async () => {
 const createFunction = async () => {
     console.log(chalk.greenBright('Running Create Function API'));
 
-    const response = await functions.create(
-        ID.unique(),
-        "Node Hello World",
-        "node-16.0",
-        [Role.any()],
-        [],
-        '',
-        15,
-        true,
-        true,
-        "index.js",
-        ''
-    );
+    const response = await functions.create({
+        functionId: ID.unique(),
+        name: "Node Hello World",
+        runtime: Runtime.Node200,
+        execute: [Role.any()],
+        entrypoint: "index.js",
+        timeout: 15,
+        enabled: true,
+        logging: true
+    });
 
     functionId = response.$id;
 
@@ -450,7 +551,26 @@ const listFunctions = async () => {
 const getFunction = async () => {
     console.log(chalk.greenBright('Running Get Function API'));
 
-    let response = await functions.get(functionId);
+    let response = await functions.get({
+        functionId
+    });
+
+    console.log(response);
+}
+
+const updateFunction = async () => {
+    console.log(chalk.greenBright('Running Update Function API'));
+
+    let response = await functions.update({
+        functionId,
+        name: "Updated Node Hello World",
+        runtime: Runtime.Node200,
+        execute: [Role.any()],
+        entrypoint: "index.js",
+        timeout: 30,
+        enabled: true,
+        logging: true
+    });
 
     console.log(response);
 }
@@ -458,12 +578,12 @@ const getFunction = async () => {
 const uploadDeployment = async () => {
     console.log(chalk.greenBright('Running Upload Deployment API'));
 
-    let response = await functions.createDeployment(
+    let response = await functions.createDeployment({
         functionId,
-        InputFile.fromPath("./resources/code.tar.gz", "code.tar.gz"),
-        true,
-        "index.js"
-    );
+        code: InputFile.fromPath("./resources/code.tar.gz", "code.tar.gz"),
+        activate: true,
+        entrypoint: "index.js"
+    });
 
     deploymentId = response.$id;
     console.log(response);
@@ -475,7 +595,10 @@ const uploadDeployment = async () => {
     let attempts = 0;
     while (attempts < maxAttempts) {
         await new Promise((resolve) => setTimeout(resolve, 2000));
-        const deployment = await functions.getDeployment(functionId, deploymentId);
+        const deployment = await functions.getDeployment({
+            functionId,
+            deploymentId
+        });
         console.log(`Deployment status: ${deployment.status}`);
         
         if (deployment.status === 'ready') {
@@ -495,7 +618,77 @@ const uploadDeployment = async () => {
 const listDeployments = async () => {
     console.log(chalk.greenBright('Running List Deployments API'));
 
-    let response = await functions.listDeployments(functionId);
+    let response = await functions.listDeployments({
+        functionId
+    });
+
+    console.log(response);
+}
+
+const listExecutions = async () => {
+    console.log(chalk.greenBright('Running List Executions API'));
+
+    let response = await functions.listExecutions({
+        functionId
+    });
+
+    console.log(response);
+}
+
+const createVariable = async () => {
+    console.log(chalk.greenBright('Running Create Variable API'));
+
+    let response = await functions.createVariable({
+        functionId,
+        key: 'MY_VAR',
+        value: 'hello123'
+    });
+
+    variableId = response.$id;
+    console.log(response);
+}
+
+const listVariables = async () => {
+    console.log(chalk.greenBright('Running List Variables API'));
+
+    let response = await functions.listVariables({
+        functionId
+    });
+
+    console.log(response);
+}
+
+const getVariable = async () => {
+    console.log(chalk.greenBright('Running Get Variable API'));
+
+    let response = await functions.getVariable({
+        functionId,
+        variableId
+    });
+
+    console.log(response);
+}
+
+const updateVariable = async () => {
+    console.log(chalk.greenBright('Running Update Variable API'));
+
+    let response = await functions.updateVariable({
+        functionId,
+        variableId,
+        key: 'MY_VAR',
+        value: 'updated_value'
+    });
+
+    console.log(response);
+}
+
+const deleteVariable = async () => {
+    console.log(chalk.greenBright('Running Delete Variable API'));
+
+    let response = await functions.deleteVariable({
+        functionId,
+        variableId
+    });
 
     console.log(response);
 }
@@ -503,7 +696,14 @@ const listDeployments = async () => {
 const executeSync = async () => {
     console.log(chalk.greenBright('Running Execute Function API (sync)'));
 
-    let response = await functions.createExecution(functionId, "", false, "/", "GET", {});
+    let response = await functions.createExecution({
+        functionId,
+        body: "",
+        async: false,
+        xpath: "/",
+        method: ExecutionMethod.GET,
+        headers: {}
+    });
 
     // sleep for 3 seconds
     console.log("Waiting a little to ensure execution is finished ...");
@@ -515,7 +715,11 @@ const executeSync = async () => {
 const executeAsync = async () => {
     console.log(chalk.greenBright('Running Execute Function API (async)'));
 
-    let response = await functions.createExecution(functionId, '', true);
+    let response = await functions.createExecution({
+        functionId,
+        body: '',
+        async: true
+    });
 
     executionId = response.$id;
 
@@ -524,7 +728,10 @@ const executeAsync = async () => {
     console.log("Waiting a little to ensure execution is finished ...");
     await new Promise((resolve) => setTimeout(resolve, 2000));
 
-    let asyncResponse = await functions.getExecution(functionId, executionId);
+    let asyncResponse = await functions.getExecution({
+        functionId,
+        executionId
+    });
 
     console.log(asyncResponse);
 }
@@ -532,7 +739,9 @@ const executeAsync = async () => {
 const deleteFunction = async () => {
     console.log(chalk.greenBright('Running Delete function API'));
 
-    const response = await functions.delete(functionId);
+    const response = await functions.delete({
+        functionId
+    });
 
     console.log(response);
 }
@@ -548,6 +757,7 @@ const runAllTasks = async () => {
     await getCollection();
     await updateCollection();
     await listAttributes();
+    await listIndexes();
 
     await createDocument();
     await listDocuments();
@@ -566,6 +776,8 @@ const runAllTasks = async () => {
     await uploadFile();
     await listFiles();
     await getFile();
+    await getFileDownload();
+    await getFilePreview();
     await updateFile();
 
     await deleteFile();
@@ -576,14 +788,24 @@ const runAllTasks = async () => {
     await listUsers();
     await getUser();
     await updateUserName();
+    await getUserPrefs();
+    await updateUserPrefs();
     await deleteUser();
 
     await createFunction();
     await listFunctions();
+    await getFunction();
+    await updateFunction();
     await uploadDeployment();
     await listDeployments();
+    await createVariable();
+    await listVariables();
+    await getVariable();
+    await updateVariable();
+    await deleteVariable();
     await executeSync();
     await executeAsync();
+    await listExecutions();
     await deleteFunction();
 }
 

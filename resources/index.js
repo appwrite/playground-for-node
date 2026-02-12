@@ -1,5 +1,6 @@
-module.exports = async ({req, res}) => {
+export default async ({ req, res, log, error }) => {
+    log("Hello from Appwrite Functions!");
     return res.json({
-        message: "Hello Open Runtimes 👋"
+        message: "Hello from Appwrite Functions 👋"
     });
-}
+};
