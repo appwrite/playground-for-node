@@ -1,4 +1,4 @@
-const { Client, Databases, Functions, Account, Users, Storage, Query, Permission, Role, ID, Runtime, ExecutionMethod, IndexType } = require('node-appwrite');
+const { Client, Databases, Functions, Account, Users, Storage, TablesDB, Query, Permission, Role, ID, Runtime, ExecutionMethod, IndexType } = require('node-appwrite');
 const chalk = require('chalk');
 const fs = require('fs');
 const path = require('path');
@@ -6,9 +6,9 @@ const { InputFile } = require('node-appwrite/file');
 
 // Config
 const client = new Client()
-    .setEndpoint('YOUR_ENDPOINT')   // Replace with your endpoint
-    .setProject('YOUR_PROJECT_ID')  // Replace with your project ID
-    .setKey('YOUR_API_KEY');        // Replace with your API Key
+    .setEndpoint(process.env.APPWRITE_ENDPOINT || 'YOUR_ENDPOINT')   // Replace with your endpoint
+    .setProject(process.env.APPWRITE_PROJECT_ID || 'YOUR_PROJECT_ID')  // Replace with your project ID
+    .setKey(process.env.APPWRITE_API_KEY || 'YOUR_API_KEY');        // Replace with your API Key
    //.setJWT('jwt');                // Use this to authenticate with JWT generated from Client SDK
 
 const databases = new Databases(client);
@@ -16,6 +16,7 @@ const functions = new Functions(client);
 const storage = new Storage(client);
 const users = new Users(client);
 const account = new Account(client);
+const tablesDB = new TablesDB(client);
 
 let databaseId;
 let collectionId;
@@ -27,6 +28,10 @@ let functionId;
 let executionId;
 let deploymentId;
 let variableId;
+let tablesDatabaseId;
+let tableId;
+let rowId;
+let transactionId;
 
 // List of API Definitions
 const createDatabase = async () => {
@@ -527,7 +532,7 @@ const createFunction = async () => {
     const response = await functions.create({
         functionId: ID.unique(),
         name: "Node Hello World",
-        runtime: Runtime.Node200,
+        runtime: Runtime.Node22,
         execute: [Role.any()],
         entrypoint: "index.js",
         timeout: 15,
@@ -564,7 +569,7 @@ const updateFunction = async () => {
     let response = await functions.update({
         functionId,
         name: "Updated Node Hello World",
-        runtime: Runtime.Node200,
+        runtime: Runtime.Node22,
         execute: [Role.any()],
         entrypoint: "index.js",
         timeout: 30,
@@ -746,6 +751,473 @@ const deleteFunction = async () => {
     console.log(response);
 }
 
+// TablesDB API Definitions
+
+const createTablesDatabase = async () => {
+    console.log(chalk.greenBright('Running TablesDB Create Database API'));
+
+    const response = await tablesDB.create({
+        databaseId: ID.unique(),
+        name: "Tables Database"
+    });
+
+    tablesDatabaseId = response.$id;
+
+    console.log(response);
+}
+
+const listTablesDatabases = async () => {
+    console.log(chalk.greenBright('Running TablesDB List Databases API'));
+
+    const response = await tablesDB.list();
+
+    console.log(response);
+}
+
+const getTablesDatabase = async () => {
+    console.log(chalk.greenBright('Running TablesDB Get Database API'));
+
+    const response = await tablesDB.get({
+        databaseId: tablesDatabaseId
+    });
+
+    console.log(response);
+}
+
+const updateTablesDatabase = async () => {
+    console.log(chalk.greenBright('Running TablesDB Update Database API'));
+
+    const response = await tablesDB.update({
+        databaseId: tablesDatabaseId,
+        name: "Updated Tables Database"
+    });
+
+    console.log(response);
+}
+
+const createTable = async () => {
+    console.log(chalk.greenBright('Running TablesDB Create Table API'));
+
+    const response = await tablesDB.createTable({
+        databaseId: tablesDatabaseId,
+        tableId: ID.unique(),
+        name: "Movies",
+        permissions: [
+            Permission.read(Role.any()),
+            Permission.create(Role.users()),
+            Permission.update(Role.users()),
+            Permission.delete(Role.users()),
+        ]
+    });
+
+    tableId = response.$id;
+    console.log(response);
+}
+
+const listTables = async () => {
+    console.log(chalk.greenBright('Running TablesDB List Tables API'));
+
+    const response = await tablesDB.listTables({
+        databaseId: tablesDatabaseId
+    });
+
+    console.log(response);
+}
+
+const getTable = async () => {
+    console.log(chalk.greenBright('Running TablesDB Get Table API'));
+
+    const response = await tablesDB.getTable({
+        databaseId: tablesDatabaseId,
+        tableId
+    });
+
+    console.log(response);
+}
+
+const updateTable = async () => {
+    console.log(chalk.greenBright('Running TablesDB Update Table API'));
+
+    const response = await tablesDB.updateTable({
+        databaseId: tablesDatabaseId,
+        tableId,
+        name: "Updated Movies"
+    });
+
+    console.log(response);
+}
+
+const createColumns = async () => {
+    console.log(chalk.greenBright('Running TablesDB Create Columns API'));
+
+    const stringCol = await tablesDB.createStringColumn({
+        databaseId: tablesDatabaseId,
+        tableId,
+        key: 'title',
+        size: 255,
+        required: true
+    });
+    console.log(stringCol);
+
+    const intCol = await tablesDB.createIntegerColumn({
+        databaseId: tablesDatabaseId,
+        tableId,
+        key: 'year',
+        required: false,
+        min: 1888,
+        max: 2100
+    });
+    console.log(intCol);
+
+    const floatCol = await tablesDB.createFloatColumn({
+        databaseId: tablesDatabaseId,
+        tableId,
+        key: 'rating',
+        required: false,
+        min: 0,
+        max: 10
+    });
+    console.log(floatCol);
+
+    const boolCol = await tablesDB.createBooleanColumn({
+        databaseId: tablesDatabaseId,
+        tableId,
+        key: 'is_released',
+        required: false,
+        default: true
+    });
+    console.log(boolCol);
+
+    console.log("Waiting a little to ensure columns are created ...");
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+}
+
+const listTableColumns = async () => {
+    console.log(chalk.greenBright('Running TablesDB List Columns API'));
+
+    const response = await tablesDB.listColumns({
+        databaseId: tablesDatabaseId,
+        tableId
+    });
+
+    console.log(response);
+}
+
+const getTableColumn = async () => {
+    console.log(chalk.greenBright('Running TablesDB Get Column API'));
+
+    const response = await tablesDB.getColumn({
+        databaseId: tablesDatabaseId,
+        tableId,
+        key: 'title'
+    });
+
+    console.log(response);
+}
+
+const createTableIndex = async () => {
+    console.log(chalk.greenBright('Running TablesDB Create Index API'));
+
+    const response = await tablesDB.createIndex({
+        databaseId: tablesDatabaseId,
+        tableId,
+        key: 'idx_year',
+        type: IndexType.Key,
+        columns: ['year']
+    });
+    console.log(response);
+
+    console.log("Waiting a little to ensure index is created ...");
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+}
+
+const listTableIndexes = async () => {
+    console.log(chalk.greenBright('Running TablesDB List Indexes API'));
+
+    const response = await tablesDB.listIndexes({
+        databaseId: tablesDatabaseId,
+        tableId
+    });
+
+    console.log(response);
+}
+
+const createTableRow = async () => {
+    console.log(chalk.greenBright('Running TablesDB Create Row API'));
+
+    const response = await tablesDB.createRow({
+        databaseId: tablesDatabaseId,
+        tableId,
+        rowId: ID.unique(),
+        data: {
+            title: 'Inception',
+            year: 2010,
+            rating: 8.8,
+            is_released: true
+        },
+        permissions: [
+            Permission.read(Role.any()),
+            Permission.update(Role.users()),
+            Permission.delete(Role.users()),
+        ]
+    });
+
+    rowId = response.$id;
+    console.log(response);
+}
+
+const listTableRows = async () => {
+    console.log(chalk.greenBright('Running TablesDB List Rows API'));
+
+    const response = await tablesDB.listRows({
+        databaseId: tablesDatabaseId,
+        tableId,
+        queries: [
+            Query.equal('year', 2010),
+        ]
+    });
+
+    console.log(response);
+}
+
+const getTableRow = async () => {
+    console.log(chalk.greenBright('Running TablesDB Get Row API'));
+
+    const response = await tablesDB.getRow({
+        databaseId: tablesDatabaseId,
+        tableId,
+        rowId
+    });
+
+    console.log(response);
+}
+
+const updateTableRow = async () => {
+    console.log(chalk.greenBright('Running TablesDB Update Row API'));
+
+    const response = await tablesDB.updateRow({
+        databaseId: tablesDatabaseId,
+        tableId,
+        rowId,
+        data: {
+            rating: 9.0
+        }
+    });
+
+    console.log(response);
+}
+
+const deleteTableRow = async () => {
+    console.log(chalk.greenBright('Running TablesDB Delete Row API'));
+
+    const response = await tablesDB.deleteRow({
+        databaseId: tablesDatabaseId,
+        tableId,
+        rowId
+    });
+
+    console.log(response);
+}
+
+const deleteTableIndex = async () => {
+    console.log(chalk.greenBright('Running TablesDB Delete Index API'));
+
+    const response = await tablesDB.deleteIndex({
+        databaseId: tablesDatabaseId,
+        tableId,
+        key: 'idx_year'
+    });
+
+    console.log(response);
+}
+
+const deleteTableColumn = async () => {
+    console.log(chalk.greenBright('Running TablesDB Delete Column API'));
+
+    const response = await tablesDB.deleteColumn({
+        databaseId: tablesDatabaseId,
+        tableId,
+        key: 'rating'
+    });
+
+    console.log(response);
+}
+
+const deleteTable = async () => {
+    console.log(chalk.greenBright('Running TablesDB Delete Table API'));
+
+    const response = await tablesDB.deleteTable({
+        databaseId: tablesDatabaseId,
+        tableId
+    });
+
+    console.log(response);
+}
+
+const deleteTablesDatabase = async () => {
+    console.log(chalk.greenBright('Running TablesDB Delete Database API'));
+
+    const response = await tablesDB.delete({
+        databaseId: tablesDatabaseId
+    });
+
+    console.log(response);
+}
+
+// Transactions API Definitions
+
+const createTransaction = async () => {
+    console.log(chalk.greenBright('Running Create Transaction API'));
+
+    const response = await tablesDB.createTransaction({
+        ttl: 60
+    });
+
+    transactionId = response.$id;
+    console.log(response);
+}
+
+const getTransaction = async () => {
+    console.log(chalk.greenBright('Running Get Transaction API'));
+
+    const response = await tablesDB.getTransaction({
+        transactionId
+    });
+
+    console.log(response);
+}
+
+const listTransactions = async () => {
+    console.log(chalk.greenBright('Running List Transactions API'));
+
+    const response = await tablesDB.listTransactions();
+
+    console.log(response);
+}
+
+const stageCreateRow = async () => {
+    console.log(chalk.greenBright('Running Stage Create Row in Transaction'));
+
+    const response = await tablesDB.createRow({
+        databaseId: tablesDatabaseId,
+        tableId,
+        rowId: ID.unique(),
+        data: {
+            title: 'The Matrix',
+            year: 1999,
+            rating: 8.7,
+            is_released: true
+        },
+        permissions: [
+            Permission.read(Role.any()),
+            Permission.update(Role.users()),
+            Permission.delete(Role.users()),
+        ],
+        transactionId
+    });
+
+    rowId = response.$id;
+    console.log(response);
+}
+
+const stageUpdateRow = async () => {
+    console.log(chalk.greenBright('Running Stage Update Row in Transaction'));
+
+    const response = await tablesDB.updateRow({
+        databaseId: tablesDatabaseId,
+        tableId,
+        rowId,
+        data: {
+            rating: 9.5
+        },
+        transactionId
+    });
+
+    console.log(response);
+}
+
+const stageOperations = async () => {
+    console.log(chalk.greenBright('Running Create Operations (batch staging) API'));
+
+    const response = await tablesDB.createOperations({
+        transactionId,
+        operations: [
+            {
+                action: 'create',
+                databaseId: tablesDatabaseId,
+                tableId,
+                rowId: ID.unique(),
+                data: { title: 'Interstellar', year: 2014, rating: 8.6, is_released: true }
+            },
+            {
+                action: 'create',
+                databaseId: tablesDatabaseId,
+                tableId,
+                rowId: ID.unique(),
+                data: { title: 'The Dark Knight', year: 2008, rating: 9.0, is_released: true }
+            }
+        ]
+    });
+
+    console.log(response);
+}
+
+const commitTransaction = async () => {
+    console.log(chalk.greenBright('Running Commit Transaction API'));
+
+    const response = await tablesDB.updateTransaction({
+        transactionId,
+        commit: true
+    });
+
+    console.log(response);
+}
+
+const rollbackTransactionDemo = async () => {
+    console.log(chalk.greenBright('Running Rollback Transaction Demo'));
+
+    // Create a new transaction
+    const tx = await tablesDB.createTransaction({ ttl: 60 });
+    console.log('Created transaction for rollback demo:', tx.$id);
+
+    // Stage a row creation
+    await tablesDB.createRow({
+        databaseId: tablesDatabaseId,
+        tableId,
+        rowId: ID.unique(),
+        data: {
+            title: 'To Be Rolled Back',
+            year: 2025,
+            rating: 1.0,
+            is_released: false
+        },
+        transactionId: tx.$id
+    });
+    console.log('Staged a row creation inside rollback transaction');
+
+    // Roll back — the staged row will NOT be persisted
+    const rollbackResponse = await tablesDB.updateTransaction({
+        transactionId: tx.$id,
+        rollback: true
+    });
+
+    console.log('Rolled back transaction (status "failed" is expected — it means the rollback succeeded and no operations were persisted):', rollbackResponse);
+}
+
+const deleteTransaction = async () => {
+    console.log(chalk.greenBright('Running Delete Transaction API'));
+
+    // Create a throwaway transaction to demonstrate delete
+    const tx = await tablesDB.createTransaction({ ttl: 60 });
+    console.log('Created transaction to delete:', tx.$id);
+
+    const response = await tablesDB.deleteTransaction({
+        transactionId: tx.$id
+    });
+
+    console.log(response);
+}
+
 const runAllTasks = async () => {
     await createDatabase();
     await listDatabases();
@@ -807,6 +1279,45 @@ const runAllTasks = async () => {
     await executeAsync();
     await listExecutions();
     await deleteFunction();
+
+    await createTablesDatabase();
+    await listTablesDatabases();
+    await getTablesDatabase();
+    await updateTablesDatabase();
+
+    await createTable();
+    await listTables();
+    await getTable();
+    await updateTable();
+
+    await createColumns();
+    await listTableColumns();
+    await getTableColumn();
+
+    await createTableIndex();
+    await listTableIndexes();
+
+    await createTableRow();
+    await listTableRows();
+    await getTableRow();
+    await updateTableRow();
+
+    // Transactions API
+    await createTransaction();
+    await getTransaction();
+    await listTransactions();
+    await stageCreateRow();
+    await stageUpdateRow();
+    await stageOperations();
+    await commitTransaction();
+    await rollbackTransactionDemo();
+    await deleteTransaction();
+
+    await deleteTableRow();
+    await deleteTableIndex();
+    await deleteTableColumn();
+    await deleteTable();
+    await deleteTablesDatabase();
 }
 
 runAllTasks()
