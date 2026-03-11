@@ -1100,7 +1100,7 @@ const getUser = async () => {
 }
 
 const getAccount = async () => {
-    console.log(chalk.greenBright('Running List Users API'));
+    console.log(chalk.greenBright('Running Get Account API'));
 
     const response = await account.get();
 
