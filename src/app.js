@@ -590,7 +590,12 @@ const createDocuments = async () => {
             }
         ]
     });
-    documentId = response.documents[0].$id;
+
+    if (response && Array.isArray(response.documents) && response.documents.length > 0) {
+        documentId = response.documents[0].$id;
+    } else {
+        console.log(chalk.yellow('Bulk create returned no documents, documentId not set'));
+    }
 
     console.log(response);
 }
