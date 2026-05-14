@@ -6,10 +6,9 @@ const {InputFile} = require('node-appwrite/file')
 
 // Config
 const client = new Client()
-    .setEndpoint('YOUR_ENDPOINT')   // Replace with your endpoint
-    .setProject('YOUR_PROJECT_ID')  // Replace with your project ID
-    .setKey('YOUR_API_KEY');        // Replace with your API Key
-   //.setJWT('jwt');                // Use this to authenticate with JWT generated from Client SDK
+    .setEndpoint("https://sfo.cloud.appwrite.io/v1")
+    .setProject('68b028da00065a4771bd')
+    .setKey('standard_aa7e56507d5c56dd7009bff479fe0db010be9e62117642934f607499a3377f9bde99bea4052dd05be6c71585a13fbd9274fd0ce74a822e3283d46ba78f21b6868a37a9812de7d1bde5811136313f41f62470f5a3bf0e071b659dc16a06b82caaed08d99674c1589bfe142bf165edcaa41b3a192c8c00c7c7b278ac00ea1152e2');        // Replace with your API Key
 
 const databases = new Databases(client);
 const functions = new Functions(client);
