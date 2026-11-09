@@ -9,7 +9,7 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
-    "chalk": "^4.1.0",
+    "chalk": "^6.0.0",
     "node-appwrite": "^21.1.0"
   }
 }
